@@ -6,7 +6,7 @@ extern "C" {
 #include <math.h>
 //#ifndef h
 //#define h b
-#include "speicherverwaltung.h"
+#include "speicherverwaltung/speicherverwaltung.h"
 //#endif
 #include "ledbar.h"
 
