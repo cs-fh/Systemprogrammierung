@@ -8,28 +8,23 @@ BIN	=	./bin/
 DOC	=	./doc/
 OBJSV	=	 display.o speicherverwaltung.o ledbar.o demoabsolute.o demorelative.o
 
-all: speicherverwaltung.o display.o demoabsolute demorelative
+all: speicherverwaltung.o demoabsolute demorelative #display.o
 
 speicherverwaltung.o: speicherverwaltung.c ./../../include/speicherverwaltung/speicherverwaltung.h
 	$(CC) $(CFLAGS) -c speicherverwaltung.c -o speicherverwaltung.o $(LFLAGS)
 
-display.o: ../ledanzeige/display.c ../../include/ledanzeige/display.h
-	$(CC) $(CFLAGS) -c ../ledanzeige/display.c -o display.o $(LFLAGS)
+#display.o: ../ledanzeige/display.c ../../include/ledanzeige/display.h
+#	$(CC) $(CFLAGS) -c ../ledanzeige/display.c -o display.o $(LFLAGS)
 	
 ledbar.o: ./../ledanzeige/ledbar.c ./../../include/ledanzeige/ledbar.h
 	$(CC) $(CFLAGS) -c ./../ledanzeige/ledbar.c -o ledbar.o $(LIB) $(LFLAGS)
-	
-demoabsolute: ledbar.o speicherverwaltung.o display.o demoabsolute.o
-	$(CC) -std=c11 -g speicherverwaltung.o display.o -I./../../include/ -lwiringPi -lm
 
-demoabsolute.o: demoabsolute.c
-	$(CC) $(CFLAGS) -c demoabsolute.c -o demoabsolute.o $(LFLAGS)
+demoabsolute: ledbar.o speicherverwaltung.o #display.o
+	$(CC) -std=c11 -g speicherverwaltung.o demoabsolute.c -I../../include/ -o demoabsolute -lwiringPi -lm #display.o missing
 
-demorelative: ledbar.o speicherverwaltung.o display.o demorelative.o
-	$(CC) -std=c11 -g speicherverwaltung.o display.o -I./../../include/ -lwiringPi -lm
+demorelative: ledbar.o speicherverwaltung.o #display.o
+	$(CC) -std=c11 -g speicherverwaltung.o demorelative.c -I../../include/ -o demorelative -lwiringPi -lm #display.o missing
 
-demorelative.o: demorelative.c
-	$(CC) $(CFLAGS) -c demorelative.c -o demorelative.o $(LFLAGS)
 	
 install:
 
@@ -42,9 +37,9 @@ run: $(OBJSV)
 doc:
 	$(DOXYGEN) ../../Doxyfile
 	
-.PHONY: clean
+.PHONY: clean distclean
 clean:
-	rm  -rf ./*.o speicherverwaltung
+	rm  -rf ./*.o speicherverwaltung demoabsolute demorelative
 	
 distclean: $(BIN)
 	rm -rf ./bin/
