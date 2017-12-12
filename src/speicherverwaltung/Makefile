@@ -8,10 +8,7 @@ BIN	=	./bin/
 DOC	=	./doc/
 OBJSV	=	 display.o speicherverwaltung.o ledbar.o demoabsolute.o demorelative.o
 
-all: speicherverwaltung
-
-speicherverwaltung: $(OBJSV)
-	$(CC) $(CFLAGS) -o speicherverwaltung speicherverwaltung.o
+all: speicherverwaltung.o display.o demoabsolute demorelative
 
 speicherverwaltung.o: speicherverwaltung.c ./../../include/speicherverwaltung/speicherverwaltung.h
 	$(CC) $(CFLAGS) -c speicherverwaltung.c -o speicherverwaltung.o $(LFLAGS)
@@ -23,9 +20,13 @@ ledbar.o: ./../ledanzeige/ledbar.c ./../../include/ledanzeige/ledbar.h
 	$(CC) $(CFLAGS) -c ./../ledanzeige/ledbar.c -o ledbar.o $(LIB) $(LFLAGS)
 	
 demoabsolute: ledbar.o speicherverwaltung.o display.o demoabsolute.o
-	$(CC) -std=c11 -g speicherverwaltung.o display.o -I./../../include/ $(LIB) -lledbar -lwiringPi -lm
+	$(CC) -std=c11 -g speicherverwaltung.o display.o -I./../../include/ -lwiringPi -lm
+
 demoabsolute.o: demoabsolute.c
 	$(CC) $(CFLAGS) -c demoabsolute.c -o demoabsolute.o $(LFLAGS)
+
+demorelative: ledbar.o speicherverwaltung.o display.o demorelative.o
+	$(CC) -std=c11 -g speicherverwaltung.o display.o -I./../../include/ -lwiringPi -lm
 
 demorelative.o: demorelative.c
 	$(CC) $(CFLAGS) -c demorelative.c -o demorelative.o $(LFLAGS)
@@ -39,7 +40,7 @@ run: $(OBJSV)
 
 .PHONY: doc	
 doc:
-	$(DOXYGEN) Doxyfile
+	$(DOXYGEN) ../../Doxyfile
 	
 .PHONY: clean
 clean:
