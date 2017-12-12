@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +15,7 @@ int main() {
     for (int z = 0; z < 6; z++) {
         cm_malloc(11);
     }
-    display_absolute();
+//    display_absolute();
 
     return 0;
 
