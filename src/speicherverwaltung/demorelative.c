@@ -6,21 +6,18 @@
 #include <stdbool.h>
 #include <wiringPi.h>
 #include <math.h>
-#include "ledbar.h"
-#include "speicherverwaltung.h"
-#include "display.h"
+#include "ledanzeige/ledbar.h"
+#include "speicherverwaltung/speicherverwaltung.h"
+#include "ledanzeige/display.h"
 
-int main ()
-{
+int main() {
 
-
-ten_blocks();
+    ten_blocks();
     for (int z = 0; z < 9; z++) {
         cm_malloc(111);
     }
-display_relative();
-
-
+    display_relative();
+    return 0;
 
 }
 
