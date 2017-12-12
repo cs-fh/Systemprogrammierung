@@ -1,4 +1,5 @@
-
+#ifndef DISPLAY_H
+#define DISPLAY_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,4 +25,5 @@ int display_relative(void);
 
 #ifdef __cplusplus
 }
+#endif
 #endif
