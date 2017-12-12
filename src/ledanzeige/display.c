@@ -1,5 +1,7 @@
 
 #include "ledanzeige/display.h"
+#include "ledanzeige/ledbar.h"
+
 /*! \brief Methode zum Anzeigen der Speicherblöcke auf der LED-Bar
  * Die Methode zeigt den simulierten Heap, nachdem er in zehn Blöcke
  * unterteilt wurde, auf der LED-Bar an. Belegte Speicherblöcke werden
