@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "speicherverwaltung.h"
+#include "speicherverwaltung/speicherverwaltung.h"
 
 char mempool[MEM_POOL_SIZE];
 struct memblock *freemem = 0;
@@ -231,7 +231,7 @@ void cm_defrag(void) {
 	if(curr->next == (memblock*) MAGIC_INT) return; //usedMem += curr->size + sizeof(memblock);
 
 	if( (((char*)curr) + (curr->size + sizeof(memblock))) <= (mempool + MEM_POOL_SIZE - 1) ) {
-	if( ( (memblock*) ((char*)curr) + (curr->size + sizeof(memblock)))->next != (memblock*) MAGIC_INT /*&& curr->next != NULL*/ && curr->next != (memblock*) MAGIC_INT) {
+	if( ( (memblock*) (((char*)curr) + (curr->size + sizeof(memblock))))->next != (memblock*) MAGIC_INT /*&& curr->next != NULL*/ && curr->next != (memblock*) MAGIC_INT) {
 	    nextBlock = ((memblock*) (((char*)curr) + (curr->size + sizeof(memblock))));
 	    while( nextBlock->next != (memblock*) MAGIC_INT && ((memblock*) (((char*)nextBlock) + (nextBlock->size + sizeof(memblock)))) <= (memblock*) (mempool + MEM_POOL_SIZE)   ) {
 		if( nextBlock->next != (memblock*) MAGIC_INT ) {
