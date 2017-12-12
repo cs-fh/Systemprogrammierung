@@ -16,7 +16,7 @@ int main() {
     for (int z = 0; z < 9; z++) {
         cm_malloc(111);
     }
-    display_relative();
+//    display_relative();
     return 0;
 
 }
