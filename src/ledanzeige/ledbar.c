@@ -4,11 +4,11 @@
  * Alle Funktionen zur LED-Bar sind in diesem Source File zu definieren.
  *
  */
-#define MY_HEADER "/home/pi/Desktop/p1/wiringPi/wiringPi/wiringPi.h"
+#define MY_HEADER "/home/pi/wiringPi/wiringPi/wiringPi.h"
 
 #include MY_HEADER
 
-#include "../include/ledbar.h"
+#include "ledanzeige/ledbar.h"
 
 /* **************************** VORGABEN ********************************** */
 /* Defines der Pins */
