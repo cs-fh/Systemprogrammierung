@@ -7,19 +7,9 @@
 
 #include "speicherverwaltung/speicherverwaltung.h"
 
-/*
- * Mempool initialisieren
- */
 char mempool[MEM_POOL_SIZE];
 struct memblock *freemem = 0;
 
-/*
- * Initialisiert den Heap
- * freemem zeigt auf den Start des Memblocks
- * 
- * if:
- *      Wenn noch nicht initialisiert -> initialisiere heap
- */
 void init_heap(void) {
     static bool heapInitialised = false;
     if (freemem == NULL && !heapInitialised) {
@@ -30,17 +20,6 @@ void init_heap(void) {
     }
 }
 
-/*
- * Arbeitet wie malloc()
- * Sucht den ersten Platz, der groß genug ist
- * Größe ist <size>
- * Freier Speicher wird in <freemem> festgehalten
- * 
- * NULL Pointer wenn:
- *      <size> = 0
- *      <freemem> = 0
- *      <curr> oder <next> > MEM_POOL_SIZE
- */
 void *cm_malloc(size_t size) {
     memblock *mem, *curr, *prev = NULL;
 #ifndef MALLOCSPLIT
@@ -69,15 +48,15 @@ void *cm_malloc(size_t size) {
             } else if (prev != NULL && curr->next != NULL) {
                 prev->next = curr->next;
             } else if (curr == freemem && curr->next != NULL) {
-                freemem = freemem->next; //freemem->next = NULL;
+                freemem = freemem->next;
             } else {
                 freemem = NULL;
             }
             mem->next = (memblock*) MAGIC_INT;
-            return (void*) (((memblock*) mem) + 1); /*(mem + sizeof(memblock) + 1); */
+            return (void*) (((memblock*) mem) + 1);
         }
         prev = curr;
-        curr = curr->next; //printf("CURR: %d, ", curr);
+        curr = curr->next;
     }
     return NULL;
 #endif
@@ -136,10 +115,6 @@ void *cm_malloc(size_t size) {
 
 }
 
-/*
- * Arbeitet wie free()
- * Gegebener Block <*ptr> wird zu freiem Block am Anfang des Memblocks
- */
 void cm_free(void *ptr) {
     memblock *d;
     if (ptr == NULL) return;
@@ -154,12 +129,8 @@ void cm_free(void *ptr) {
     return;
 }
 
-/*
- * Testdaten für den Memblock
- */
 void ten_blocks(void) {
     memblock *a, *b, *c, *d, *e, *f, *g, *h, *i, *j;
-    //void *tmp;
     a = (memblock*) mempool;
     freemem = a;
 
@@ -199,68 +170,13 @@ void ten_blocks(void) {
     i->size = 160;
     i->next = j;
 
-    //f = (memblock*) ((char*) (j + 1) + 160);
     j->size = &mempool[MEM_POOL_SIZE - 1] - ((char*) (j + 1));
     j->next = NULL;
 
-
-
-    /*
-    memblock *a, *b, *c, *d, *e, *f, *g, *h, *i, *j;
-
-        a = (memblock*) mempool;
-        b = (memblock*) (mempool + 200);
-        c = (memblock*) (mempool + 400);
-        d = (memblock*) (mempool + 600);
-        e = (memblock*) (mempool + 800);
-        f = (memblock*) (mempool + 1000);
-        g = (memblock*) (mempool + 1200);
-        h = (memblock*) (mempool + 1400);
-        i = (memblock*) (mempool + 1600);
-        j = (memblock*) (mempool + 1800);
-
-        a->size = 200 - sizeof(memblock);
-        a->next = b;
-
-        b->size = 200 - sizeof(memblock);
-        b->next = c;
-
-        c->size = 200 - sizeof(memblock);
-        c->next = d;
-
-        d->size = 200 - sizeof(memblock);
-        d->next = e;
-
-        e->size = 200 - sizeof(memblock);
-        e->next = f;
-
-        f->size = 200 - sizeof(memblock);
-        f->next = g;
-
-        g->size = 200 - sizeof(memblock);
-        g->next = h;
-
-        h->size = 200 - sizeof(memblock);
-        h->next = i;
-
-        i->size = 200 - sizeof(memblock);
-        i->next = j;
-
-        j->size = MEM_POOL_SIZE - 1 - (9*200) -sizeof(memblock);
-        j->next = NULL;
-
-        freemem = a;
-     */
 }
 
-/*
- * Freie Nachbarblöcke werden zu einem Block
- * 
- * NULL Pointer bei:
- *      <freemem> = NULL
- *      <curr> out of range
- */
-void cm_defragoid(void) {
+
+void cm_defrag(void) {
 
     memblock *curr, *prev = NULL, *nextBlock;
 
@@ -270,8 +186,8 @@ void cm_defragoid(void) {
     while (curr != NULL) {
         if (curr > (memblock*) (mempool + MEM_POOL_SIZE - 1) || curr < (memblock*) mempool) return;
 
-        //PREV = curr;
-        if (curr->next == (memblock*) MAGIC_INT) return; //usedMem += curr->size + sizeof(memblock);
+        
+        if (curr->next == (memblock*) MAGIC_INT) return; 
 
         if ((((char*) curr) + (curr->size + sizeof (memblock))) <= (mempool + MEM_POOL_SIZE - 1)) {
             if (((memblock*) (((char*) curr) + (curr->size + sizeof (memblock))))->next != (memblock*) MAGIC_INT && curr->next != (memblock*) MAGIC_INT) {
@@ -280,12 +196,10 @@ void cm_defragoid(void) {
                     if (nextBlock->next != (memblock*) MAGIC_INT) {
 
                         curr->size = curr->size + nextBlock->size + sizeof (memblock);
-                        //if(curr->next == NULL) curr->next = NULL;
                         if (freemem == nextBlock) freemem = curr;
                     }
                     nextBlock = ((memblock*) (((char*) nextBlock) + (nextBlock->size + sizeof (memblock))));
                 }
-                //if(freemem == PREV) freemem = curr;
             }
         }
         if (prev != NULL) prev->next = curr;
@@ -296,10 +210,6 @@ void cm_defragoid(void) {
     return;
 }
 
-/*
- * Effizienteres Defrag
- * Geht direkt Schritt für Schritt den Mempool durch, anstatt den freien Speicher abzurufen
- */
 void cm_defrag20(void) {
     memblock *curr, *freememIndex, *nextBlock;
     curr = (memblock*) mempool;
@@ -308,8 +218,7 @@ void cm_defrag20(void) {
     while (curr <= (memblock*) (mempool + MEM_POOL_SIZE - 1) && curr != NULL
             && (((char*) curr) + (curr->size + sizeof (memblock))) <= (mempool + MEM_POOL_SIZE - 1)) {
 
-        if (curr->next == (memblock*) MAGIC_INT && (memblock*) (((char*) curr) + (curr->size + sizeof (memblock))) <= (memblock*) (mempool + MEM_POOL_SIZE /*- 1*/)) {
-            //curr = (memblock*) (((char*)curr) + (curr->size + sizeof(memblock)));
+        if (curr->next == (memblock*) MAGIC_INT && (memblock*) (((char*) curr) + (curr->size + sizeof (memblock))) <= (memblock*) (mempool + MEM_POOL_SIZE)) {
             curr = curr;
 
         } else if ((memblock*) (((char*) curr) + (curr->size + sizeof (memblock))) <= (memblock*) (mempool + MEM_POOL_SIZE - 1) && curr->next != (memblock*) MAGIC_INT) {
@@ -334,7 +243,6 @@ void cm_defrag20(void) {
             } else if (freememIndex != NULL) {
                 freememIndex->next = curr;
                 freememIndex = curr;
-                //if( (((char*)nextBlock) + (nextBlock->size + sizeof(memblock)))) > (mempool + MEM_POOL_SIZE - 1) ) curr
             }
         }
         if ((memblock*) (((char*) curr) + (curr->size + sizeof (memblock))) <= (memblock*) (mempool + MEM_POOL_SIZE - 1))
@@ -353,9 +261,7 @@ void cm_defrag20(void) {
 void *cm_memcpy(void *dest, const void *src, size_t n) {
     memblock *srcblock = ((memblock*) ((memblock*) src - 1));
     memblock *destblock = ((memblock*) ((memblock*) dest - 1));
-    //void* x = NULL;
-    //char bytesToCopy[n+1] = NULL;
-    /*size_t xx = 0;*/ int i;
+    int i;
     char *d = (char*) dest;
     char *s = (char*) src;
 
@@ -373,9 +279,6 @@ void *cm_memcpy(void *dest, const void *src, size_t n) {
     return dest;
 }
 
-/*
- * Speicher größer oder kleiner machen
- */
 void *cm_realloc(void *ptr, size_t size) {
     void* x = NULL;
 
