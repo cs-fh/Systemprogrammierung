@@ -36,6 +36,9 @@ static const byte REGISTER2 = 0x00;
 static const byte EMPTY = 0x00;
 
 /* Initialisierung der LED-Bar */
+/*! \brief Die vorgegebene Funktion init_led_bar
+ * Initialisierung der LED-Bar
+ */
 void init_led_bar(void) {
     static int device_initialised = 0;
 
@@ -55,6 +58,9 @@ void init_led_bar(void) {
 }
 
 /* Senden der Daten an die LED-Bar */
+/*! \brief Die vorgegebene Funktion send_led_data
+ *  Senden der Daten an die LED-Bar
+ */
 static void send_led_data(void) { /*eig static?*/
     int i = 0;
 
@@ -80,6 +86,9 @@ static void send_led_data(void) { /*eig static?*/
 }
 
 /* Clock-Pin togglen */
+/*! \brief Die vorgegebene Funktion toggle_clock
+ * Clock-Pin togglen
+ */
 static void toggle_clock(void) {
     static int clock_pin_active = 0;
 
@@ -93,6 +102,9 @@ static void toggle_clock(void) {
 }
 
 /* Abschliessen der Datenuebertragung an die LED-Bar */
+/*! \brief Die vorgegebene Funktion latch_led_data
+ * Abschliessen der Datenuebertragung an die LED-Bar
+ */
 static void latch_led_data(void) {
     int i;
 
@@ -110,7 +122,13 @@ static void latch_led_data(void) {
     digitalWrite(PIN_CLOCK, LOW);
 }
 /* **************************** VORGABEN ********************************** */
-
+/*! \brief Die Funktion send_byte
+ *	Die Funktion arbeitet den übergebenen Parameter bitweise ab.
+ * Dabei wird in einer Schleife jedes Mal eine '1' mit einer Bitstelle verundet.
+ * Das sorgt dafür, dass immer eine Maske auf genau die Bitstelle gelegt wird, an welcher
+ * sich die 1 auch gerade befindet, da die 1 in der Schleife immer um i Bitstellen verschoben wird.
+ * \param b Zahl die übertragen werden soll
+ */
 static void send_byte(byte b) {
   char i;
   for(i = 0; i < 8; i++) {
@@ -125,6 +143,13 @@ static void send_byte(byte b) {
   }
 }
 
+/*! \brief Die Funktion set_led
+ * Diese Funktion setzt an der Stelle led in der LED_Bar_Status den Helligkeitswert brt.
+ * Falls led kleiner als 0 oder grösser als 9 ist, wird 0 zurückgegeben.
+ * \param led Stelle an der LED-Bar, welche verändert werden soll
+ * \param brt Helligkeitswert für die Stelle led
+ * \return Entweder '1' bei erfolgreichen Setzen des Helligkeitswert, oder '0' bei einem Fehlschlag
+ */
 int set_led( leds led,  brightness brt) {
   if(!led || !brt) {
     return 0;
@@ -134,6 +159,11 @@ int set_led( leds led,  brightness brt) {
   return 1;
 }
 
+ /*! \brief Die Funktion get_led
+ * Eine einfache Getter-Funktion, die an der Stelle led, den Helligkeitswert ausgibt
+ * \param led Welche LED ausgegeben werden soll.
+ * \return Helligkeitswert der ausgegeben werden soll
+ */
  brightness get_led( leds led) {
   if(LED_Bar_Status[led] == OFF) {
      return OFF;
@@ -146,6 +176,14 @@ int set_led( leds led,  brightness brt) {
   }
 }
 
+/*! \brief Die Funktion set_brightness
+ * Die Funktion setzt für alle LEDs den Helligkeitswert brt.
+ * Dieser kann entweder FULL, MED oder OFF sein.
+ * Falls der Helligkeitswert nicht FULL, MED oder OFF entspricht, wird
+ * 0 zurückgegeben.
+ * \param brt Helligkeitswert für die gesamte LED-Bar
+ * \return Entweder '1' bei erfolgreichen Setzen des Helligkeitswert, oder '0' bei einem Fehlschlag
+ */
 int set_brightness( brightness brt) {
   int i;
   if(!brt) return 0;

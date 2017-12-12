@@ -1,6 +1,10 @@
 
 #include "ledanzeige/display.h"
-
+/*! \brief Methode zum Anzeigen der Speicherblöcke auf der LED-Bar
+ * Die Methode zeigt den simulierten Heap, nachdem er in zehn Blöcke
+ * unterteilt wurde, auf der LED-Bar an. Belegte Speicherblöcke werden
+ * durch leuchtende LEDs angezeigt und freie Blöcke durch ausgeschaltete LEDs.
+ */
 int display_absolute(void) {
     memblock *curr;
     int nleds = 0; leds sht = LED01;
@@ -23,6 +27,10 @@ int display_absolute(void) {
     return nleds;
 }
 
+/*! \brief Methode zum Anzeigen des Heap auf der LED-Bar
+ * Die Methode zeigt den Füllstand des simulierten Heap prozentual auf
+ * der LED-Bar an.
+ */
 int display_relative(void) {
     memblock *curr;
     size_t sum = 0;
