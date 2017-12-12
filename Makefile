@@ -60,11 +60,11 @@ BIN	=	./bin/
 DOC	=	./doc/
 OBJS	=	main
 .PHONY: all
-all: makeLedbar
-	$(CC) $(CFLAGS) -c $(SRC) $(INCLUDE) $(LFLAGS)
-	rm ./*.o
-build: all
-	$(CC) $(CFLAGS) -o Main ./src/main.c $(LIBLED)
+#all: makeLedbar
+#	$(CC) $(CFLAGS) -c $(SRC) $(INCLUDE) $(LFLAGS)
+#	rm ./*.o
+#build: all
+#	$(CC) $(CFLAGS) -o Main ./src/main.c $(LIBLED)
 .PHONY: makebin
 makebin: 
 	mkdir bin
