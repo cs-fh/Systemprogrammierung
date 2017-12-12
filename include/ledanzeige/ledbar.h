@@ -5,6 +5,10 @@
  * Header File zu deklarieren.
  *
  */
+
+#ifndef LEDBAR_H
+#define LEDBAR_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,4 +52,6 @@ int set_brightness( brightness brt);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
