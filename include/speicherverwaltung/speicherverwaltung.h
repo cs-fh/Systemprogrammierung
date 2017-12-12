@@ -33,6 +33,10 @@ void init_heap(void);
 
 /**
  *\brief Sucht nach einem freien Speicherblock mithilfe der Freispeicherliste.
+ *NULL Pointer wenn:
+ *      <size> = 0
+ *      <freemem> = 0
+ *      <curr> oder <next> > MEM_POOL_SIZE
  \param size Groesse, die der Speicherblock mindestens haben soll
  \return Gibt einen Pointer auf den allozierten Speicher zurueck
 */
@@ -40,7 +44,7 @@ void *cm_malloc(size_t size);
 
 /**
  *\brief Gibt den vom Parameter ptr referenzierten Speicherblock wieder frei. Wenn ptr ein NULL-Pointer oder kein durch
- cm_malloc() angelegter Pointer ist, tut cm_free() nichts.
+ * cm_malloc() angelegter Pointer ist, tut cm_free() nichts.
  \param ptr Pointer auf den Speicherblock, der freigegeben werden soll
 */
 void cm_free(void *ptr);
@@ -52,6 +56,9 @@ void ten_blocks(void);
 
 /**
  *\brief Fuegt benachbarte aneinander grenzende freie Speicherbereiche zu einem einzigen Speicherbereich zusammen.
+ * NULL Pointer bei:
+ *      <freemem> = NULL
+ *      <curr> out of range
 */
 void cm_defrag(void);
 
