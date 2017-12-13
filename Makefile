@@ -5,10 +5,10 @@ all: makeLedbar
 install: all installLedbar
 	mkdir -p bin && cp src/speicherverwaltung/demoabsolute src/speicherverwaltung/demorelative bin/
 makeLedbar:
-	gcc -c -o src/speicherverwaltung/ledbar.o src/speicherverwaltung/ledbar.c
-	gcc -shared -o src/speicherverwaltung/libledbar.so src/speicherverwaltung/ledbar.o
+	gcc -c -o src/ledanzeige/ledbar.o src/ledanzeige/ledbar.c
+	gcc -shared -o src/ledanzeige/libledbar.so src/ledanzeige/ledbar.o
 installLedbar: makeLedbar
-	mkdir -p lib && cp src/speicherverwaltung/libledbar.so lib/
+	mkdir -p lib && cp src/ledanzeige/libledbar.so lib/
 test:
 	cd tests/speicherverwaltung
 	make
