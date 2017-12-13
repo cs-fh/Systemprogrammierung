@@ -1,29 +1,24 @@
 
 ## Compiler and general flags
 CC=gcc
-CFLAGS=-ansi -pedantic -Wall
+CFLAGS=-std=c11 -pedantic -Wall
 CFLAGS+=-fPIC
 CFLAGS+=-DNDEBUG
-CFLAGS+=-I$(INCL_V) -I$(INCL_M) -I.
+CFLAGS+=-I$(INCLUDE) -I.
 
 CXX=g++
-CXXFLAGS=-Wall
-CXXFLAGS+=-fPIC
+CXXFLAGS=-std=c++14 -Wall
 CXXFLAGS+=-DNDEBUG
-CXXFLAGS+=-I$(INCL_V) -I$(INCL_M) -I.
+CXXFLAGS+=-I$(INCLUDE) -I.
 
 CMOCKFLAGS=$(shell cmock-config --cflags)
 CMOCKLDFLAGS:=$(shell cmock-config --libs)
 
 LDFLAGS=-L. -Wl,-rpath=.
-LDLIBS=-lm -pthread -lgtest -lgmock -lgmock_main
+LDLIBS=-lwiringPi -lm -pthread -lgtest -lgtest_main  # -lgmock -lgmock_main
 
-# path to includes in "Vorgabe" (and solution of students)
-INCL_V?=$(shell realpath "$(shell pwd)/../../include/")
-SRC_V?=$(shell realpath "$(shell pwd)/../../src/")
-# path to includes in "Muster" (i.e. our own solution)
-INCL_M?=$(INCL_V)
-SRC_M?=$(SRC_V)
+INCLUDE=../include/
+SRC=../src/
 
 
 ###############################################################################
@@ -45,41 +40,45 @@ SRC_M?=$(SRC_V)
 ## and an additional compiler flag like -DABGABE or -DMALLOCSPLIT.
 ##
 
-## Sources under test (SUT)
+## Sources under test
 ## TODO: Project specific: Adapt accordingly!
-SUTSRC = $(addprefix $(SRC_V), /studiverwaltung/spfree.c) $(addprefix $(SRC_M), /studiverwaltung/studiverwaltung.c /pruefungen/pruefungen.c)
+SUTSRC = $(addprefix $(SRC), ledbar.c ringbuffer.c)
 
-## Extra flags for compiling the SUT (as defined in assignment sheet)
+## Flags and suffixes
 ## TODO: Project specific: Adapt accordingly!
-FLAG =  ## no extra flags in P1
+FLAG =  # no extra flags in P3
+SUFF = _flag
 
 ## Test binaries
 ## TODO: Project specific: Adapt accordingly!
-TESTS      = pruefungen  								## names of test executables
-TESTS_FLAG = ## not used in P1                          ## names of test executables (used with flag)
+TESTS      = ringbuffer smartpointer
+TESTS_FLAG = $(TESTS:%=%$(SUFF))
+ALL_TESTS  = $(TESTS) $(TESTS_FLAG)
+
+TESTS_RINGBUFFER   = $(filter ringbuffer%,$(ALL_TESTS))
+TESTS_SMARTPOINTER = $(filter smartpointer%,$(ALL_TESTS))
 
 ## Test sources
 ## TODO: Project specific: Adapt accordingly!
-pruefungen: pruefungen_tests.cpp
-###############################################################################
-
-
-## Common definitions
-ALL_TESTS             = $(TESTS) $(TESTS_FLAG)        ## all test executables
-TEST_TARGETS          = $(ALL_TESTS:%=test_%)         ## names of test targets
-TEST_TARGETS_VALGRIND = $(TEST_TARGETS:%=%_valgrind)  ## same, but for Valgrind tests
+$(TESTS_RINGBUFFER): ringbufferTests.cpp
+$(TESTS_SMARTPOINTER): smartpointerTests.cpp $(SRC)/smartpointer/RefCounter.cpp $(INCLUDE)/smartpointer/NullPointerException.h $(INCLUDE)/smartpointer/SmartPointer.h
 
 
 ## Main targets
-.DEFAULT_GOAL=abgabe  ## otherwise the definition of test sources would count as default target
+.DEFAULT_GOAL=test  ## otherwise the definition of test sources would count as default target
+.Phony: test
+test: $(TESTS)
+	-./ringbuffer
+	-./smartpointer
 
-.Phony: $(TEST_TARGETS)
-$(TEST_TARGETS): test_%: %$
+.Phony: test_flag
+test_flag: $(TESTS_FLAG)  ## not used in P3
+	-./ringbuffer$(SUFF)
+	-./smartpointer$(SUFF)
+
+.Phony: test_ringbuffer test_smartpointer
+test_ringbuffer test_smartpointer: test_%: %$
 	-./$*
-
-.Phony: $(TEST_TARGETS_VALGRIND)
-$(TEST_TARGETS_VALGRIND): test_%_valgrind: %$
-	-valgrind --leak-check=yes ./$*
 
 # Abgabe-Target:
 # 1. Tests mit -DABGABE-Flag (normale Ausgabe)
@@ -94,25 +93,30 @@ $(TEST_TARGETS_VALGRIND): test_%_valgrind: %$
 .Phony: abgabe
 abgabe: CFLAGS+=-DABGABE
 abgabe: CXXFLAGS+=-DABGABE
-abgabe: $(TEST_TARGETS) $(TEST_TARGETS_VALGRIND)
+abgabe: $(TESTS)
+	-./ringbuffer
+	-./smartpointer
+	-valgrind --leak-check=yes ./ringbuffer
+	-valgrind --leak-check=yes ./smartpointer
+###############################################################################
 
 
 ## Auxiliary variables and dependencies of sources under test
-SUTLIBS  = libsut.so libsut_flag.so
+SUTLIBS  = libsut.so libsut$(SUFF).so
 SUTDEPS  = $(SUTLIBS:.so=.d)
 $(SUTDEPS): %.d: $(SUTSRC)
 	$(CC) $(CFLAGS) -MM $^ > $@ -MT $*.so
 -include $(SUTDEPS)
 
 ## Extra flags: Compile with `-DABGABE`
-libsut_flag.so: CFLAGS+=$(FLAG)
+libsut$(SUFF).so: CFLAGS+=$(FLAG)
 $(TESTS_FLAG): CXXFLAGS+=$(FLAG)
 
 ## Extra dependencies: Libs and test targets
 $(TESTS): LDLIBS+=-lsut
 $(TESTS): libsut.so
-$(TESTS_FLAG): LDLIBS+=-lsut_flag
-$(TESTS_FLAG): libsut_flag.so
+$(TESTS_FLAG): LDLIBS+=-lsut$(SUFF)
+$(TESTS_FLAG): libsut$(SUFF).so
 
 ## Do something :-)
 $(ALL_TESTS):

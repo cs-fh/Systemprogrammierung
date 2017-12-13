@@ -1,5 +1,9 @@
 # NetBeans Projektordner
-.nbproject/*
+nbproject
+
+# nbproject | nbproject/ | nbproject/*
+# Folgendes ignoriert alle Unterverzeichnisse, aber keine Dateien im aktuellen Verzeichnis:
+# */*
 
 # Prerequisites
 *.d

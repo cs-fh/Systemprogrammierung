@@ -1,16 +1,31 @@
+CC=gcc
+CXX=g++
 
-all: speicherverwaltung.o display.o demoabsolute demorelative
+CFLAGS=-std=c11 -pedantic -Wall
+CXXFLAGS=-std=c++14 -pedantic -Wall -Werror
+CXXFLAGS+=-I$(INCLUDE)
+
+LDFLAGS=-L$(LIB) -Wl,-rpath=$(LIB)
+LDLIBS=-lm -lstdc++
+
+INCLUDE=.
+LIB=.
+
+
+SRC  = main.cpp MyString.cpp
+OBJ  = $(SRC:.cpp=.o)
+PROG = MyString
+
+all: ringbuffer.o demoringbuffer
 #ledbar.o:
 #	gcc -std=c11 -Wall -pedantic ledbar.c -o ledbar.o -c -g
-speicherverwaltung.o:
-	gcc -std=c11 -Wall -pedantic speicherverwaltung.c -o speicherverwaltung.o -c -g -I../include/
-display.o:
-	gcc -std=c11 -Wall -pedantic display.c -o display.o -c -g -I../include/
-demoabsolute: ledbar.o speicherverwaltung.o display.o
-	gcc -std=c11 -g speicherverwaltung.o display.o demoabsolute.c -I../include/ -o demoabsolute -L../lib/ -lledbar -lwiringPi -lm
-demorelative: ledbar.o speicherverwaltung.o display.o
-	gcc -std=c11 -g speicherverwaltung.o display.o demorelative.c -I../include/ -o demorelative -L../lib/ -lledbar -lwiringPi -lm
+ringbuffer.o:
+	gcc -std=c11 -Wall -pedantic ringbuffer.c -o ringbuffer.o -c -g -I../include/
+
+demoringbuffer: #ledbar.o ringbuffer.o
+	gcc -std=c11 -g demoringbuffer.c -I../include/ -o demoringbuffer -L../lib/ -lledbar -lringbuffer -lwiringPi -lm -Wl,-rpath=../lib/
+#ldlibrarypath
 
 clean:
 	rm -f *.o
-	rm -f demoabsolute demorelative
+	rm -f demoringbuffer
