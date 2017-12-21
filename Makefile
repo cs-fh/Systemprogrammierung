@@ -1,20 +1,19 @@
-CC=gcc
-CXX=g++
+CC = gcc
+CXX = g++
 
-CFLAGS=-std=c11 -pedantic -Wall
-CXXFLAGS=-std=c++14 -pedantic -Wall -Werror
-CXXFLAGS+=-I$(INCLUDE)
+CFLAGS = -std=c11 -pedantic -Wall
+CXXFLAGS = -std=c++14 -pedantic -Wall -Werror
+CXXFLAGS+ = -I$(INCLUDE)
 
-LDFLAGS=-L$(LIB) -Wl,-rpath=$(LIB)
-LDLIBS=-lm -lstdc++
+LDFLAGS = -L$(LIB) -Wl,-rpath=$(LIB)
+LDLIBS = -lm -lstdc++
 
-INCLUDE=.
-LIB=.
+INCLUDE = .
+LIB = .
 
 SRC  = 
 OBJ  = $(SRC:.cpp=.o)
 PROG = 
-
 
 all: installLedbar installRingbuffer
 	cd src && $(MAKE)
