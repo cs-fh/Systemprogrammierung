@@ -4,7 +4,7 @@
 #include <wiringPi.h>
 #include <mcp3004.h>
 
-#include "tempSensor.h"
+#include "temperatur/tempSensor.h"
 
 using namespace std;
 
